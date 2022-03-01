@@ -1,0 +1,355 @@
+openapi: 3.1.0
+info:
+  title: api
+  version: '1.0'
+  summary: test api doc
+  description: This is test api to get hang of stoplight
+servers:
+  - url: 'http://localhost:3000'
+    description: Local Server
+paths:
+  '/users/{userId}':
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+        description: Id of an existing user.
+    get:
+      summary: Get User Info by User ID
+      tags: []
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      operationId: get-users-userId
+      description: Retrieve the information of the user with the matching user ID.
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: Update the information of an existing user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  description: 'If a new email is given, the user''s email verified property will be set to false.'
+                dateOfBirth:
+                  type: string
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+  /user: {}
+  /v1/article:
+    get:
+      summary: Get all articles
+      tags:
+        - Auth
+      operationId: get-v1-article
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  articeNumber: 1899
+              properties:
+                articeNumber:
+                  type: number
+                  description: Article Number
+            examples:
+              example-1:
+                value:
+                  articeNumber: 0
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+          text/html:
+            schema:
+              type: object
+              properties: {}
+          text/plain:
+            schema:
+              type: object
+              properties: {}
+        description: Request for articles
+      description: Get all articles list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    articleList:
+                      - articleId: 142
+                        title: War on Ukraine
+                        author: Smith
+                        content: This war is WW3
+                        image: path to image
+                        views: 137
+                properties:
+                  articleList:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        articleId:
+                          type: number
+                        title:
+                          type: string
+                          minLength: 1
+                        author:
+                          type: string
+                          minLength: 1
+                        content:
+                          type: string
+                          minLength: 1
+                        image:
+                          type: string
+                          minLength: 1
+                        views:
+                          type: number
+                        '':
+                          type: string
+                      required:
+                        - image
+              examples:
+                example-1:
+                  value:
+                    articleList:
+                      - articleId: 1121
+                        title: War on Ukraine
+                        author: Smith
+                        content: This is WW3
+                        image: path to image
+                        views: 0
+      parameters: []
+      x-internal: false
+    post:
+      summary: Create article
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: OK
+      operationId: post-v1-article
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: search
+          description: article number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                articleNumber:
+                  type: number
+                title:
+                  type: string
+                  minLength: 1
+                author:
+                  type: string
+                  minLength: 1
+                content:
+                  type: string
+                  minLength: 1
+                views:
+                  type: number
+                image:
+                  type: string
+                  minLength: 1
+              required:
+                - articleNumber
+                - title
+                - author
+                - content
+                - views
+                - image
+              x-examples:
+                example-1:
+                  articleNumber: 1001
+                  title: War on Ukraine
+                  author: Mr Silva
+                  content: War on Ukraine declared to be WW3
+                  views: 134
+                  image: image path
+            examples:
+              example-1:
+                value: {}
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+          multipart/form-data:
+            schema:
+              description: ''
+              type: object
+              properties:
+                articleNumber:
+                  type: number
+                title:
+                  type: string
+                  minLength: 1
+                author:
+                  type: string
+                  minLength: 1
+                content:
+                  type: string
+                  minLength: 1
+                views:
+                  type: number
+                image:
+                  type: string
+                  minLength: 1
+              required:
+                - articleNumber
+                - title
+                - author
+                - content
+                - views
+                - image
+              x-examples:
+                example-1:
+                  articleNumber: 1001
+                  title: War on Ukraine
+                  author: Mr Silva
+                  content: War on Ukraine declared to be WW3
+                  views: 134
+                  image: image path
+            examples: {}
+        description: ''
+      description: Create new article
+    put:
+      summary: Update article
+      tags:
+        - Auth
+      responses: {}
+      operationId: put-v1-article
+    delete:
+      summary: Delete article
+      tags:
+        - Auth
+      responses: {}
+      operationId: delete-v1-article
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+    Article:
+      title: Article
+      type: object
+      properties:
+        id:
+          type: string
+  securitySchemes:
+    API Key - 1:
+      type: http
+      scheme: bearer
